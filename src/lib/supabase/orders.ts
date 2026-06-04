@@ -13,8 +13,11 @@ export interface Order {
   user_id: string;
   product_id: string;
   amount: number;
-  status: 'pending' | 'completed' | 'failed';
-  license_key?: string;
+  payment_status: 'pending' | 'completed' | 'failed';
+  transaction_id?: string;
+  mpesa_checkout_id?: string;
+  mpesa_receipt_number?: string;
+  phone_number?: string;
   product?: {
     name: string;
     slug: string;
@@ -60,7 +63,7 @@ export async function getAllOrders() {
     .select(`
       *,
       product:products(name, slug),
-      profile:profiles(full_name, email)
+      profile:profiles(full_name)
     `)
     .order("created_at", { ascending: false });
 

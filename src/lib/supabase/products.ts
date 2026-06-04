@@ -30,6 +30,21 @@ export async function getProductBySlug(slug: string) {
   return data as EAProduct;
 }
 
+export async function getProductById(id: string) {
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    console.error(`Error fetching product with id ${id}:`, error);
+    return null;
+  }
+
+  return data as EAProduct;
+}
+
 export async function createProduct(product: Omit<EAProduct, "id">) {
   const { data, error } = await supabase
     .from("products")

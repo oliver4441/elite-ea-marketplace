@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -29,7 +30,11 @@ export default function LoginPage() {
       router.push("/dashboard");
       router.refresh();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "An error occurred during login");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "An error occurred during login"
+      );
     } finally {
       setLoading(false);
     }
@@ -39,7 +44,9 @@ export default function LoginPage() {
     <>
       <div className="mb-8 text-center">
         <h1 className="text-2xl font-bold mb-2">Welcome Back</h1>
-        <p className="text-gray-400 text-sm">Enter your credentials to access your account</p>
+        <p className="text-gray-400 text-sm">
+          Enter your credentials to access your account
+        </p>
       </div>
 
       <form onSubmit={handleLogin} className="space-y-6">
@@ -55,8 +62,13 @@ export default function LoginPage() {
             <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 ml-1">
               Email Address
             </label>
+
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+              <Mail
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
+                size={18}
+              />
+
               <input
                 type="email"
                 required
@@ -73,12 +85,21 @@ export default function LoginPage() {
               <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">
                 Password
               </label>
-              <Link href="/auth/forgot-password" size="sm" className="text-xs text-elite-gold hover:text-elite-gold-light">
+
+              <Link
+                href="/auth/forgot-password"
+                className="text-xs text-elite-gold hover:text-elite-gold-light"
+              >
                 Forgot?
               </Link>
             </div>
+
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+              <Lock
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
+                size={18}
+              />
+
               <input
                 type="password"
                 required
@@ -110,7 +131,10 @@ export default function LoginPage() {
       <div className="mt-8 pt-6 border-t border-elite-border text-center">
         <p className="text-gray-400 text-sm">
           Don&apos;t have an account?{" "}
-          <Link href="/auth/register" className="text-elite-gold font-bold hover:text-elite-gold-light transition-colors">
+          <Link
+            href="/auth/register"
+            className="text-elite-gold font-bold hover:text-elite-gold-light transition-colors"
+          >
             Create one now
           </Link>
         </p>

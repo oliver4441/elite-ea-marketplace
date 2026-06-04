@@ -9,13 +9,21 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@stripe/stripe-js": "^9.7.0",
+    "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.107.0",
+    "axios": "^1.17.0",
+    "date-fns": "^4.4.0",
     "framer-motion": "^12.40.0",
     "lucide-react": "^1.17.0",
     "next": "15.0.0",
     "react": "19.0.0-rc-65a56d0e-20241020",
     "react-dom": "19.0.0-rc-65a56d0e-20241020",
-    "recharts": "^3.8.1"
+    "react-hook-form": "^7.77.0",
+    "recharts": "^3.8.1",
+    "sonner": "^2.0.7",
+    "stripe": "^22.2.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^20",

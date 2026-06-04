@@ -138,9 +138,13 @@ export default function AdminProductsPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end space-x-2">
-                        <button className="p-2 text-gray-400 hover:text-elite-gold hover:bg-white/5 rounded-lg transition-all" title="Edit">
+                        <Link 
+                          href={`/admin/products/${bot.id}/edit`}
+                          className="p-2 text-gray-400 hover:text-elite-gold hover:bg-white/5 rounded-lg transition-all" 
+                          title="Edit"
+                        >
                           <Edit2 size={18} />
-                        </button>
+                        </Link>
                         <button 
                           onClick={() => handleDelete(bot.id)}
                           className="p-2 text-gray-400 hover:text-red-500 hover:bg-white/5 rounded-lg transition-all" 

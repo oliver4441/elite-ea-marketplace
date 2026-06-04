@@ -34,10 +34,10 @@ export default function AdminDashboard() {
       ]);
 
       const totalRevenue = orders.reduce((acc: number, order: Order) => 
-        order.status === 'completed' ? acc + Number(order.amount) : acc, 0
+        order.payment_status === 'completed' ? acc + Number(order.amount) : acc, 0
       );
 
-      const completedOrders = orders.filter((o: Order) => o.status === 'completed').length;
+      const completedOrders = orders.filter((o: Order) => o.payment_status === 'completed').length;
 
       setStats([
         { label: "Total Revenue", value: `$${totalRevenue.toLocaleString()}`, trend: "+0%", isUp: true, icon: DollarSign },
@@ -52,7 +52,7 @@ export default function AdminDashboard() {
         product: order.product?.name || "Product",
         price: `$${order.amount}`,
         time: new Date(order.created_at).toLocaleDateString(),
-        status: order.status
+        status: order.payment_status
       })));
     } catch (error) {
       console.error("Error fetching dashboard data:", error);

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import FloatingWhatsApp from "@/components/ui/FloatingWhatsApp";
 
 export const metadata: Metadata = {
   title: "Elite EA Marketplace | Premium Forex Trading Bots",
@@ -15,6 +16,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased bg-background text-foreground">
         {children}
+        <FloatingWhatsApp />
       </body>
     </html>
   );

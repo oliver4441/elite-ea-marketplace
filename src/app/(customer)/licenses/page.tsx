@@ -34,17 +34,24 @@ export default function LicensesPage() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const orders = await getUserOrders(user.id);
-        const activeLicenses = orders.filter(o => o.status === 'completed').map(o => ({
-          id: o.id,
-          product: o.product,
-          key: o.license_key || "PENDING-KEY",
-          status: "active",
-          activations: 0,
-          max_activations: 1,
-          expires_at: "Lifetime",
+        const { data: userLicenses, error } = await supabase
+          .from('licenses')
+          .select('*, product:products(name, slug)')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        const formattedLicenses = userLicenses.map(l => ({
+          id: l.id,
+          product: l.product,
+          key: l.license_key,
+          status: l.status,
+          activations: l.activation_count,
+          max_activations: l.max_activations,
+          expires_at: l.expires_at ? new Date(l.expires_at).toLocaleDateString() : "Lifetime",
         }));
-        setLicenses(activeLicenses);
+        setLicenses(formattedLicenses);
       }
     } catch (error) {
       console.error("Error fetching licenses:", error);
