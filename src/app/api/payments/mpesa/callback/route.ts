@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     if (resultCode === 0) {
       // Payment Successful
       const callbackMetadata = result.CallbackMetadata.Item;
-      const receiptNumber = callbackMetadata.find((item: any) => item.Name === "MpesaReceiptNumber").Value;
+      const receiptNumber = callbackMetadata.find((item: { Name: string; Value: string | number }) => item.Name === "MpesaReceiptNumber").Value;
 
       // 1. Find the pending order
       const { data: order, error: orderFetchError } = await supabaseAdmin
@@ -77,8 +77,9 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error) {
     console.error('M-Pesa Callback error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

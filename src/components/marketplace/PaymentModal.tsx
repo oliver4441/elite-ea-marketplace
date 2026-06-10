@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Zap, Smartphone, Loader2 } from "lucide-react";
+import { X, Zap, Smartphone, Loader2, CreditCard } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -20,6 +20,7 @@ export default function PaymentModal({
   priceType, 
   onClose 
 }: PaymentModalProps) {
+  const [method, setMethod] = useState<"mpesa" | "paystack">("mpesa");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -41,7 +42,6 @@ export default function PaymentModal({
       const data = await response.json();
       if (data.success) {
         toast.success("STK Push sent to your phone. Please enter your PIN.");
-        // We could poll for status here, but for now redirect to dashboard
         setTimeout(() => {
           router.push("/dashboard?waiting_payment=true");
         }, 3000);
@@ -53,6 +53,38 @@ export default function PaymentModal({
       toast.error("An error occurred. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePaystackCheckout = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/payments/paystack/initialize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId, priceType }),
+      });
+
+      const data = await response.json();
+      if (data.success && data.authorization_url) {
+        toast.success("Redirecting to Paystack...");
+        window.location.href = data.authorization_url;
+      } else {
+        toast.error(data.error || "Failed to initialize Paystack payment.");
+      }
+    } catch (error) {
+      console.error("Paystack error:", error);
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = () => {
+    if (method === "mpesa") {
+      handleMpesaCheckout();
+    } else {
+      handlePaystackCheckout();
     }
   };
 
@@ -77,14 +109,40 @@ export default function PaymentModal({
             </div>
           </div>
 
-          {/* Payment Method - M-Pesa Only */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3 text-[#10B981] bg-[#10B981]/10 p-3 rounded-lg border border-[#10B981]/30">
-              <Smartphone size={20} />
-              <span className="text-sm font-bold uppercase">M-Pesa STK Push</span>
+          {/* Payment Method Selection */}
+          <div className="space-y-3">
+            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">
+              Select Payment Method
+            </label>
+            <div className="grid grid-cols-2 gap-4">
+              <button 
+                onClick={() => setMethod("mpesa")}
+                className={`flex flex-col items-center justify-center p-4 rounded-xl border transition-all ${
+                  method === "mpesa" 
+                    ? "border-[#10B981] bg-[#10B981]/10 text-[#10B981]" 
+                    : "border-elite-border bg-white/5 text-gray-400 hover:border-gray-600"
+                }`}
+              >
+                <Smartphone size={24} className="mb-2" />
+                <span className="text-xs font-bold">M-Pesa</span>
+              </button>
+              <button 
+                onClick={() => setMethod("paystack")}
+                className={`flex flex-col items-center justify-center p-4 rounded-xl border transition-all ${
+                  method === "paystack" 
+                    ? "border-blue-500 bg-blue-500/10 text-blue-500" 
+                    : "border-elite-border bg-white/5 text-gray-400 hover:border-gray-600"
+                }`}
+              >
+                <CreditCard size={24} className="mb-2" />
+                <span className="text-xs font-bold">Card / Others</span>
+              </button>
             </div>
-            
-            <div className="space-y-3">
+          </div>
+
+          {/* M-Pesa Specific Fields */}
+          {method === "mpesa" && (
+            <div className="space-y-3 animate-in slide-in-from-top-2 duration-300">
               <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">
                 M-Pesa Number
               </label>
@@ -99,18 +157,28 @@ export default function PaymentModal({
                 * Approx. KES {(priceUSD * 130).toLocaleString()} will be charged at current rates.
               </p>
             </div>
-          </div>
+          )}
+
+          {method === "paystack" && (
+            <div className="p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl text-center animate-in slide-in-from-top-2 duration-300">
+              <p className="text-xs text-gray-400 leading-relaxed">
+                You will be redirected to Paystack&apos;s secure checkout to complete your payment using Card, Bank Transfer, or USSD.
+              </p>
+            </div>
+          )}
 
           <button 
             disabled={loading}
-            onClick={handleMpesaCheckout}
-            className="w-full py-4 rounded-xl font-bold flex items-center justify-center space-x-2 transition-all transform active:scale-95 bg-[#10B981] hover:bg-[#059669] text-white disabled:opacity-50 disabled:active:scale-100"
+            onClick={handleSubmit}
+            className={`w-full py-4 rounded-xl font-bold flex items-center justify-center space-x-2 transition-all transform active:scale-95 text-white disabled:opacity-50 disabled:active:scale-100 ${
+              method === "mpesa" ? "bg-[#10B981] hover:bg-[#059669]" : "bg-blue-600 hover:bg-blue-700"
+            }`}
           >
             {loading ? (
               <Loader2 className="animate-spin" size={20} />
             ) : (
               <>
-                <span>Initiate M-Pesa Payment</span>
+                <span>{method === "mpesa" ? "Initiate M-Pesa Payment" : "Proceed to Paystack"}</span>
                 <Zap size={18} />
               </>
             )}
@@ -118,7 +186,7 @@ export default function PaymentModal({
         </div>
 
         <div className="p-4 bg-black/20 text-center">
-          <p className="text-[10px] text-gray-500">Secure transactions powered by M-Pesa</p>
+          <p className="text-[10px] text-gray-500">Secure transactions powered by {method === "mpesa" ? "M-Pesa" : "Paystack"}</p>
         </div>
       </div>
     </div>
