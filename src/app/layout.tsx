@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import FloatingWhatsApp from "@/components/ui/FloatingWhatsApp";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Elite EA Marketplace | Premium Forex Trading Bots",
@@ -16,6 +17,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased bg-background text-foreground">
         {children}
+        <Toaster position="top-right" richColors />
         <FloatingWhatsApp />
       </body>
     </html>

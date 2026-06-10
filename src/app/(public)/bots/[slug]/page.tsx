@@ -1,12 +1,59 @@
-import { notFound } from "next/navigation";
+import { notFound } from "next/link";
 import Link from "next/link";
-import { getProductBySlug } from "@/lib/supabase/products";
+import { getProductBySlug, getProducts } from "@/lib/supabase/products";
 import PerformanceChart from "@/components/charts/PerformanceChart";
-import { CheckCircle2, TrendingUp, Activity, Shield, Download, Zap } from "lucide-react";
+import { CheckCircle2, TrendingUp, Activity, Shield, Download, Zap, ArrowLeft, Star } from "lucide-react";
 import BuyButton from "@/components/marketplace/BuyButton";
+import BotCard from "@/components/marketplace/BotCard";
+import { EAProduct } from "@/lib/mockData";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+}
+
+const MOCK_REVIEWS = [
+  {
+    id: "1",
+    name: "James M.",
+    rating: 5,
+    date: "2026-05-15",
+    comment: "Incredible results from day one. The scalper is precise and the support team helped me set up within minutes.",
+  },
+  {
+    id: "2",
+    name: "Sarah K.",
+    rating: 4,
+    date: "2026-05-10",
+    comment: "Solid performance over the last month. Drawdown is well within the advertised range. Highly recommend for beginners.",
+  },
+  {
+    id: "3",
+    name: "Michael T.",
+    rating: 5,
+    date: "2026-04-28",
+    comment: "Best EA I've used so far. The profit factor is real — I've been running it on two accounts with consistent gains.",
+  },
+  {
+    id: "4",
+    name: "David L.",
+    rating: 4,
+    date: "2026-04-20",
+    comment: "Good bot overall. Took a while to optimize settings for my broker but once dialed in, it performs great.",
+  },
+];
+
+function StarRating({ rating }: { rating: number }) {
+  return (
+    <div className="flex space-x-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          size={16}
+          className={star <= rating ? "text-elite-gold fill-elite-gold" : "text-gray-600"}
+        />
+      ))}
+    </div>
+  );
 }
 
 export default async function BotDetailPage({ params }: PageProps) {
@@ -17,9 +64,24 @@ export default async function BotDetailPage({ params }: PageProps) {
     notFound();
   }
 
+  // Get related bots (exclude current)
+  const allProducts = await getProducts();
+  const relatedBots = allProducts.filter((p) => p.slug !== slug).slice(0, 3);
+
+  const avgRating = MOCK_REVIEWS.reduce((sum, r) => sum + r.rating, 0) / MOCK_REVIEWS.length;
+
   return (
     <div className="pt-32 pb-24">
       <div className="container mx-auto px-6">
+        {/* Back Link */}
+        <Link
+          href="/bots"
+          className="inline-flex items-center space-x-2 text-gray-400 hover:text-elite-gold transition-colors mb-8 group"
+        >
+          <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+          <span>Back to Bots</span>
+        </Link>
+
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start mb-12 gap-8">
           <div className="max-w-3xl">
@@ -30,17 +92,17 @@ export default async function BotDetailPage({ params }: PageProps) {
             <h1 className="text-4xl md:text-6xl font-bold mb-4">{bot.name}</h1>
             <p className="text-xl text-gray-400 leading-relaxed">{bot.short_description}</p>
           </div>
-          
+
           <div className="glass-card p-6 min-w-[300px] border-elite-gold/30">
             <p className="text-sm text-gray-500 uppercase mb-2">Lifetime License</p>
             <p className="text-4xl font-bold mb-6">${bot.price_lifetime}</p>
-            <BuyButton 
-              productId={bot.id} 
+            <BuyButton
+              productId={bot.id}
               productName={bot.name}
               priceUSD={Number(bot.price_lifetime)}
-              priceType="lifetime" 
+              priceType="lifetime"
             />
-            <Link 
+            <Link
               href={`https://wa.me/254726090372?text=Hello%20Elite%20EA%20Team,%20I'm%20interested%20in%20learning%20more%20about%20${encodeURIComponent(bot.name)}.`}
               target="_blank"
               className="w-full py-3 rounded-full border border-green-500/30 text-green-500 font-bold text-center hover:bg-green-500/5 transition-all flex items-center justify-center space-x-2 text-sm mb-4"
@@ -74,11 +136,11 @@ export default async function BotDetailPage({ params }: PageProps) {
         <div className="grid lg:grid-cols-3 gap-12">
           <div className="lg:col-span-2 space-y-12">
             <PerformanceChart />
-            
+
             <div className="glass-card p-8">
               <h2 className="text-2xl font-bold mb-6">Technical Strategy</h2>
               <p className="text-gray-400 leading-relaxed mb-6">{bot.description}</p>
-              
+
               <div className="grid md:grid-cols-2 gap-8">
                 <div>
                   <h3 className="text-lg font-bold mb-4 text-elite-gold">Supported Pairs</h3>
@@ -96,6 +158,40 @@ export default async function BotDetailPage({ params }: PageProps) {
                     ))}
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Reviews Section */}
+            <div className="glass-card p-8">
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-2xl font-bold">Customer Reviews</h2>
+                <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-1">
+                    <Star className="text-elite-gold fill-elite-gold" size={20} />
+                    <span className="text-xl font-bold">{avgRating.toFixed(1)}</span>
+                  </div>
+                  <span className="text-sm text-gray-500">({MOCK_REVIEWS.length} reviews)</span>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                {MOCK_REVIEWS.map((review) => (
+                  <div key={review.id} className="border-b border-elite-border/30 pb-6 last:border-0 last:pb-0">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-elite-gold/10 rounded-full flex items-center justify-center text-elite-gold font-bold text-sm">
+                          {review.name.charAt(0)}
+                        </div>
+                        <span className="font-bold text-sm">{review.name}</span>
+                      </div>
+                      <span className="text-xs text-gray-500">{new Date(review.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</span>
+                    </div>
+                    <div className="mb-2">
+                      <StarRating rating={review.rating} />
+                    </div>
+                    <p className="text-sm text-gray-400 leading-relaxed">{review.comment}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -135,6 +231,18 @@ export default async function BotDetailPage({ params }: PageProps) {
             </div>
           </div>
         </div>
+
+        {/* Related Bots */}
+        {relatedBots.length > 0 && (
+          <div className="mt-20">
+            <h2 className="text-3xl font-bold mb-8">Related <span className="gold-text">Bots</span></h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {relatedBots.map((relatedBot) => (
+                <BotCard key={relatedBot.id} bot={relatedBot} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
