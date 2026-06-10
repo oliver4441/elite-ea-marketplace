@@ -19,9 +19,7 @@ export async function POST(request: Request) {
     if (resultCode === 0) {
       // Payment Successful
       const callbackMetadata = result.CallbackMetadata.Item;
-      const amount = callbackMetadata.find((item: any) => item.Name === "Amount").Value;
       const receiptNumber = callbackMetadata.find((item: any) => item.Name === "MpesaReceiptNumber").Value;
-      const phoneNumber = callbackMetadata.find((item: any) => item.Name === "PhoneNumber").Value;
 
       // 1. Find the pending order
       const { data: order, error: orderFetchError } = await supabaseAdmin

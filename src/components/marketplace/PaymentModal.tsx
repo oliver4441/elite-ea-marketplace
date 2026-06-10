@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Zap, Smartphone, CreditCard, Loader2 } from "lucide-react";
+import { X, Zap, Smartphone, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -20,35 +20,9 @@ export default function PaymentModal({
   priceType, 
   onClose 
 }: PaymentModalProps) {
-  const [method, setMethod] = useState<"stripe" | "mpesa">("stripe");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-
-  const handleStripeCheckout = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId, priceType }),
-      });
-
-      const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else if (data.error === "Unauthorized") {
-        router.push("/auth/login?callbackUrl=" + window.location.pathname);
-      } else {
-        toast.error(data.error || "Failed to initiate Stripe checkout.");
-      }
-    } catch (error) {
-      console.error("Stripe error:", error);
-      toast.error("An error occurred. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleMpesaCheckout = async () => {
     if (!phoneNumber || !/^254(7|1)\d{8}$/.test(phoneNumber)) {
@@ -103,40 +77,14 @@ export default function PaymentModal({
             </div>
           </div>
 
-          {/* Payment Methods */}
-          <div className="space-y-3">
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Select Payment Method</p>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <button 
-                onClick={() => setMethod("stripe")}
-                className={`flex flex-col items-center justify-center p-4 rounded-xl border transition-all ${
-                  method === "stripe" 
-                  ? "border-elite-gold bg-elite-gold/10 text-elite-gold" 
-                  : "border-elite-border bg-white/5 text-gray-500 hover:border-gray-700"
-                }`}
-              >
-                <CreditCard size={24} className="mb-2" />
-                <span className="text-xs font-bold uppercase">Card / Crypto</span>
-              </button>
-
-              <button 
-                onClick={() => setMethod("mpesa")}
-                className={`flex flex-col items-center justify-center p-4 rounded-xl border transition-all ${
-                  method === "mpesa" 
-                  ? "border-[#10B981] bg-[#10B981]/10 text-[#10B981]" 
-                  : "border-elite-border bg-white/5 text-gray-500 hover:border-gray-700"
-                }`}
-              >
-                <Smartphone size={24} className="mb-2" />
-                <span className="text-xs font-bold uppercase">M-Pesa STK</span>
-              </button>
+          {/* Payment Method - M-Pesa Only */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-3 text-[#10B981] bg-[#10B981]/10 p-3 rounded-lg border border-[#10B981]/30">
+              <Smartphone size={20} />
+              <span className="text-sm font-bold uppercase">M-Pesa STK Push</span>
             </div>
-          </div>
-
-          {/* M-Pesa Specific Fields */}
-          {method === "mpesa" && (
-            <div className="space-y-3 animate-in slide-in-from-top duration-300">
+            
+            <div className="space-y-3">
               <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">
                 M-Pesa Number
               </label>
@@ -148,23 +96,21 @@ export default function PaymentModal({
                 className="w-full bg-black/40 border border-elite-border rounded-lg px-4 py-3 outline-none focus:border-[#10B981] transition-all font-mono"
               />
               <p className="text-[10px] text-gray-500 leading-relaxed italic">
-                * Approx. KES {(priceUSD * 130).toLocaleString()} will be charged.
+                * Approx. KES {(priceUSD * 130).toLocaleString()} will be charged at current rates.
               </p>
             </div>
-          )}
+          </div>
 
           <button 
             disabled={loading}
-            onClick={method === "stripe" ? handleStripeCheckout : handleMpesaCheckout}
-            className={`w-full py-4 rounded-xl font-bold flex items-center justify-center space-x-2 transition-all transform active:scale-95 ${
-              method === "stripe" ? "btn-gold" : "bg-[#10B981] hover:bg-[#059669] text-white"
-            } disabled:opacity-50 disabled:active:scale-100`}
+            onClick={handleMpesaCheckout}
+            className="w-full py-4 rounded-xl font-bold flex items-center justify-center space-x-2 transition-all transform active:scale-95 bg-[#10B981] hover:bg-[#059669] text-white disabled:opacity-50 disabled:active:scale-100"
           >
             {loading ? (
               <Loader2 className="animate-spin" size={20} />
             ) : (
               <>
-                <span>{method === "stripe" ? "Proceed to Stripe" : "Initiate M-Pesa Payment"}</span>
+                <span>Initiate M-Pesa Payment</span>
                 <Zap size={18} />
               </>
             )}
@@ -172,7 +118,7 @@ export default function PaymentModal({
         </div>
 
         <div className="p-4 bg-black/20 text-center">
-          <p className="text-[10px] text-gray-500">Secure transactions powered by Elite Payments</p>
+          <p className="text-[10px] text-gray-500">Secure transactions powered by M-Pesa</p>
         </div>
       </div>
     </div>

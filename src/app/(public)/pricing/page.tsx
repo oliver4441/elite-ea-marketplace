@@ -127,22 +127,18 @@ export default function PricingPage() {
 
         <div className="mt-20 glass-card p-10 flex flex-col md:flex-row items-center justify-between gap-8 border-elite-gold/20">
           <div className="max-w-xl text-center md:text-left">
-            <h2 className="text-2xl font-bold mb-4">Pay with <span className="text-green-500">M-Pesa</span>?</h2>
-            <p className="text-gray-400">For our clients in Kenya, we support direct M-Pesa payments. Chat with us to get the payment details and instant activation.</p>
+            <h2 className="text-2xl font-bold mb-4 text-[#10B981]">Instant <span className="text-white">M-Pesa</span> Activation</h2>
+            <p className="text-gray-400">We support fully automated M-Pesa STK Push payments. Get your license key instantly upon payment completion. No manual verification required.</p>
           </div>
-          <Link 
-            href="https://wa.me/254726090372?text=Hello%20Elite%20EA%20Team,%20I'd%20like%20to%20pay%20via%20M-Pesa." 
-            target="_blank"
-            className="flex items-center space-x-3 bg-green-600/10 border border-green-500/20 px-8 py-4 rounded-full hover:bg-green-600/20 transition-all group"
-          >
-            <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white group-hover:scale-110 transition-transform font-bold">
+          <div className="flex items-center space-x-3 bg-[#10B981]/10 border border-[#10B981]/20 px-8 py-4 rounded-full">
+            <div className="w-10 h-10 bg-[#10B981] rounded-full flex items-center justify-center text-white font-bold">
               M
             </div>
             <div className="text-left">
-              <p className="text-xs text-gray-500 uppercase font-bold text-green-500">Pay via</p>
-              <p className="text-lg font-bold">M-Pesa Inquiries</p>
+              <p className="text-xs text-gray-500 uppercase font-bold text-[#10B981]">Automated</p>
+              <p className="text-lg font-bold">STK Push Ready</p>
             </div>
-          </Link>
+          </div>
         </div>
 
         <div className="mt-12 glass-card p-10 flex flex-col md:flex-row items-center justify-between gap-8 border-elite-gold/20">
@@ -168,11 +164,10 @@ export default function PricingPage() {
         </div>
 
         <div className="mt-20 text-center">
-          <p className="text-gray-500 text-sm mb-4">Payment Methods</p>
-          <div className="flex flex-wrap justify-center gap-8 opacity-40">
-            {/* Payment Method Logos Placeholder */}
-            {["Stripe", "PayPal", "Bitcoin", "Ethereum", "M-Pesa"].map((m) => (
-              <span key={m} className="font-bold text-lg">{m}</span>
+          <p className="text-gray-500 text-sm mb-4">Official Payment Method</p>
+          <div className="flex flex-wrap justify-center gap-8 opacity-60">
+            {["M-Pesa"].map((m) => (
+              <span key={m} className="font-bold text-2xl text-[#10B981]">{m}</span>
             ))}
           </div>
         </div>
