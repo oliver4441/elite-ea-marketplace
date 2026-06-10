@@ -131,7 +131,7 @@ export default function AdminOrdersPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex justify-center">
-                        {getStatusBadge(order.status)}
+                        {getStatusBadge(order.payment_status)}
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right">

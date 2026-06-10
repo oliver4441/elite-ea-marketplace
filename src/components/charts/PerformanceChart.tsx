@@ -120,7 +120,7 @@ const PerformanceChart = ({ days = 30, height = 400, showHeader = true }: Perfor
               fontSize: "12px",
             }}
             itemStyle={{ color: "#D4AF37" }}
-            formatter={(value: number) => [`$${value.toLocaleString()}`, undefined]}
+            formatter={(value) => [`$${Number(value).toLocaleString()}`, undefined]}
           />
           <Area 
             type="monotone" 

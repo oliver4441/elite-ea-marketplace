@@ -11,7 +11,7 @@ import {
   Loader2,
   Users
 } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/browser";
 
 interface UserRow {
   id: string;

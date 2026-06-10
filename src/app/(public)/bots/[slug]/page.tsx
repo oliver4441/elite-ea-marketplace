@@ -1,4 +1,4 @@
-import { notFound } from "next/link";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getProductBySlug, getProducts } from "@/lib/supabase/products";
 import PerformanceChart from "@/components/charts/PerformanceChart";
